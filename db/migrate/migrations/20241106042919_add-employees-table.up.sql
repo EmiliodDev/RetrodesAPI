@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS Employees (
     email VARCHAR(255) UNIQUE,
     department VARCHAR(100),
     position VARCHAR(100),
+    password CHAR(60),
     INDEX(department),
     INDEX(position)
 );

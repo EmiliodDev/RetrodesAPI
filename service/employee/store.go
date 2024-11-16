@@ -16,7 +16,7 @@ func NewStore(db *sql.DB) *Store {
 }
 
 func (s *Store) CreateEmployee(employee types.Employee) error {
-	_, err := s.db.Exec("INSERT INTO Employees (name, lastname, email, department, position) VALUES (?,?,?,?,?)", employee.Name, employee.LastName, employee.Email, employee.Department, employee.Position)
+	_, err := s.db.Exec("INSERT INTO Employees (name, lastname, email, department, position, password) VALUES (?,?,?,?,?,?)", employee.Name, employee.LastName, employee.Email, employee.Department, employee.Position, employee.Password)
 	if err != nil {
 		return err
 	}

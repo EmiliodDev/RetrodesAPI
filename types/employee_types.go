@@ -1,7 +1,9 @@
 package types
 
 type EmployeeStore interface {
-
+	GetEmployeeByEmail(email string) (*Employee, error)
+	GetEmployeeByID(id int) (*Employee, error)
+	CreateEmployee(Employee) error
 }
 
 type Employee struct {
@@ -11,6 +13,7 @@ type Employee struct {
 	Email		string	`json:"email"`
 	Department	string	`json:"department"`
 	Position	string	`json:"position"`
+	Password	string	`json:"password"`
 }
 
 type RegisterEmployeePayload struct {
@@ -19,11 +22,10 @@ type RegisterEmployeePayload struct {
 	Email		string	`json:"email" validate:"required,email"`
 	Department	string	`json:"department" validate:"required"`
 	Position	string	`json:"position" validate:"required"`
-	Username	string	`json:"username" validate:"required"`
 	Password	string	`json:"password" validate:"required,min=3,max=30"`
 }
 
 type LoginEmployeePayload struct {
-	Username	string	`json:"username" validate:"required"`
+	Email	string	`json:"email" validate:"required,email"`
 	Password	string	`json:"password" validate:"required"`
 }
