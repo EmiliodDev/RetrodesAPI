@@ -1,26 +1,23 @@
 package utils
 
 import (
-	"encoding/json"
-	"fmt"
-	"net/http"
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
-func ParseJSON(r *http.Request, payload any) error {
-	if r.Body != nil {
-		return fmt.Errorf("missing request body")
+var Validate = validator.New()
+
+func GetTokenFromRequest(c *gin.Context) string {
+	tokenAuth := c.GetHeader("Authorization")
+	tokenQuery := c.Query("token")
+
+	if tokenAuth != "" {
+		return tokenAuth
 	}
 
-	return json.NewDecoder(r.Body).Decode(payload)
-}
+	if tokenQuery != "" {
+		return tokenQuery
+	}
 
-func WriteJSON(w http.ResponseWriter, status int, v any) error {
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(status)
-
-	return json.NewEncoder(w).Encode(v)
-}
-
-func WriteError(w http.ResponseWriter, status int, err error) {
-	WriteJSON(w, status, map[string]string{"error": err.Error()})
+	return ""
 }
