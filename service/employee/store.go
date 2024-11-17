@@ -25,20 +25,19 @@ func (s *Store) CreateEmployee(employee types.Employee) error {
 }
 
 func (s *Store) GetEmployeeByEmail(email string) (*types.Employee, error) {
-	rows, err := s.db.Query("SELECT 1 FROM Employees WHERE email = ?", email)
+	rows, err := s.db.Query("SELECT * FROM Employees WHERE email = ?", email)
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	e := new(types.Employee)
-	for rows.Next() {
+	if rows.Next() {
 		e, err = scanRowsIntoEmployee(rows)
 		if err != nil {
 			return nil, err
 		}
-	}
-
-	if e.ID == 0 {
+	} else {
 		return nil, fmt.Errorf("employee not found")
 	}
 
@@ -46,7 +45,7 @@ func (s *Store) GetEmployeeByEmail(email string) (*types.Employee, error) {
 }
 
 func (s *Store) GetEmployeeByID(id int) (*types.Employee, error) {
-	rows, err := s.db.Query("SELECT 1 FROM Employees WHERE id = ?", id)
+	rows, err := s.db.Query("SELECT * FROM Employees WHERE id = ?", id)
 	if err != nil {
 		return nil, err
 	}
@@ -74,6 +73,7 @@ func scanRowsIntoEmployee(rows *sql.Rows) (*types.Employee, error) {
 		&e.Email,
 		&e.Department,
 		&e.Position,
+		&e.Password,
 	)
 	if err != nil {
 		return nil, err

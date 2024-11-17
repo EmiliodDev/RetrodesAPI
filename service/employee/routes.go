@@ -14,5 +14,6 @@ func NewHandler(store types.EmployeeStore) *Handler {
 }
 
 func (h *Handler) RegisterRoutes(router *gin.RouterGroup) {
-	
+	router.POST("/register", h.handleRegister)
+	router.POST("/login", h.handleLogin)
 }
