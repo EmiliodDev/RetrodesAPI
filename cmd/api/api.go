@@ -3,8 +3,10 @@ package api
 import (
 	"database/sql"
 	"log"
+	"time"
 
 	"github.com/EmiliodDev/gofeed/service/employee"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -23,6 +25,7 @@ func NewAPIServer(addr string, db *sql.DB) *APIServer {
 func (s *APIServer) Run() error {
     router := gin.New()
 
+    configCors(router)
     router.Use(gin.Logger())
     router.Use(gin.Recovery())
 
@@ -40,4 +43,15 @@ func (s *APIServer) Run() error {
     log.Println("Listening on: ", s.addr)
 
     return router.Run(s.addr)
+}
+
+func configCors(r *gin.Engine) {
+    r.Use(cors.New(cors.Config{
+        AllowOrigins:   []string{"http://localhost:5173"},
+        AllowMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+        AllowHeaders:   []string{"Origin", "Content-Type", "Authorization"},
+        ExposeHeaders:  []string{"Content-Length"},
+        AllowCredentials: true,
+        MaxAge: 12 * time.Hour,
+    }))
 }
