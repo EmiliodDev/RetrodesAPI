@@ -73,13 +73,13 @@ func CreateJWT(secret []byte, employeeID int) (string, error) {
 		return "", err
 	}
 
-	return tokenString, err
+	return tokenString, nil
 }
 
 func validateJWT(tokenString string) (*jwt.Token, error) {
 	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); ok {
-			return nil, fmt.Errorf("unexpected signed method: %v", token.Header["alg"])
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
 		return []byte(config.Envs.JWTSecret), nil

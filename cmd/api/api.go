@@ -5,7 +5,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/EmiliodDev/gofeed/service/employee"
+	c_service "github.com/EmiliodDev/gofeed/service/complaints"
+	e_service "github.com/EmiliodDev/gofeed/service/employee"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -34,11 +35,20 @@ func (s *APIServer) Run() error {
         log.Fatalf("Failed to set trusted proxies: %v", err)
     }
 
+    // Groups
     api := router.Group("/api/v1")
 
-    userStore := employee.NewStore(s.db)
-    userHandler := employee.NewHandler(userStore)
+    // Stores
+    userStore := e_service.NewStore(s.db)
+    complaintsStore := c_service.NewStore(s.db)
+
+    // Handlers
+    userHandler := e_service.NewHandler(userStore)
+    complaintsHandler := c_service.NewHandler(complaintsStore)
+
+    // Registser routes
     userHandler.RegisterRoutes(api)
+    complaintsHandler.RegisterRoutes(api, userStore)
 
     log.Println("Listening on: ", s.addr)
 

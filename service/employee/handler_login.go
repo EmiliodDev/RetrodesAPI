@@ -21,7 +21,7 @@ func (h *Handler) handleLogin(c *gin.Context) {
 
 	if err := utils.Validate.Struct(payload); err != nil {
 		errors := err.(validator.ValidationErrors)
-		c.JSON(http.StatusBadRequest, fmt.Errorf("invalid payload %v: ", errors))
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("invalid payload: %v", errors)})
 		return
 	}
 
@@ -37,11 +37,16 @@ func (h *Handler) handleLogin(c *gin.Context) {
 	}
 
 	secret := []byte(config.Envs.JWTSecret)
-	token, err := auth.CreateJWT(secret, e.ID); 
+	token, err := auth.CreateJWT(secret, e.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create token"})
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]string{"token": token})
+	isHR := e.Department == "Human Resources"
+
+	c.JSON(http.StatusOK, gin.H{
+		"token": token,
+		"isHR":  isHR,
+	})
 }

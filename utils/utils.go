@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
@@ -8,16 +10,18 @@ import (
 var Validate = validator.New()
 
 func GetTokenFromRequest(c *gin.Context) string {
-	tokenAuth := c.GetHeader("Authorization")
-	tokenQuery := c.Query("token")
+    tokenAuth := c.GetHeader("Authorization")
+    if tokenAuth != "" {
+        if strings.HasPrefix(tokenAuth, "Bearer ") {
+            return tokenAuth[len("Bearer "):]
+        }
+        return ""
+    }
 
-	if tokenAuth != "" {
-		return tokenAuth
-	}
+    tokenQuery := c.Query("token")
+    if tokenQuery != "" {
+        return tokenQuery
+    }
 
-	if tokenQuery != "" {
-		return tokenQuery
-	}
-
-	return ""
+    return ""
 }
